@@ -30,15 +30,15 @@ export class HikeRecord {
   @Column({ nullable: true })
   notes: string;
 
-  @ApiProperty({ description: 'The trail that was hiked', required: false })
-  @ManyToOne(() => Trail, trail => trail.hikeRecords, { nullable: true })
+  @ApiProperty({ description: 'The trail that was hiked', type: () => Trail, required: false })
+  @ManyToOne(() => Trail, { nullable: true })
   trail: Trail;
 
-  @ApiProperty({ description: 'The park visit this hike was part of' })
-  @ManyToOne(() => Visit, visit => visit.hikeRecords)
+  @ApiProperty({ description: 'The park visit this hike was part of', type: () => Visit })
+  @ManyToOne(() => Visit)
   visit: Visit;
 
   @ApiHideProperty()
-  @OneToMany(() => Photo, photo => photo.hikeRecord)
+  @OneToMany(() => Photo, () => {})
   photos: Photo[];
 } 

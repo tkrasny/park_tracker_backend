@@ -38,11 +38,11 @@ export class Trail {
   @Column('jsonb', { nullable: true })
   trailPath: any;
 
-  @ApiProperty({ description: 'The park this trail belongs to' })
-  @ManyToOne(() => Park, park => park.trails)
+  @ApiProperty({ description: 'The park this trail belongs to', type: () => Park })
+  @ManyToOne(() => Park)
   park: Park;
 
   @ApiHideProperty()
-  @OneToMany(() => HikeRecord, hikeRecord => hikeRecord.trail)
+  @OneToMany(() => HikeRecord, () => {})
   hikeRecords: HikeRecord[];
 } 

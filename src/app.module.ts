@@ -6,11 +6,16 @@ import { AppService } from './app.service';
 import * as entities from './entities';
 import { ParksModule } from './parks/parks.module';
 import { UsersModule } from './users/users.module';
+import { TrailsModule } from './trails/trails.module';
+import { PhotosModule } from './photos/photos.module';
+import { VisitsModule } from './visits/visits.module';
+import auth0Config from './common/auth/auth0.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [auth0Config],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -43,6 +48,9 @@ import { UsersModule } from './users/users.module';
     }),
     ParksModule,
     UsersModule,
+    TrailsModule,
+    PhotosModule,
+    VisitsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -33,11 +33,11 @@ export class Photo {
   @Column('point', { nullable: true })
   location: Point;
 
-  @ApiProperty({ description: 'The park visit this photo is associated with', required: false })
-  @ManyToOne(() => Visit, visit => visit.photos, { nullable: true })
+  @ApiProperty({ description: 'The park visit this photo is associated with', type: () => Visit, required: false })
+  @ManyToOne(() => Visit, { nullable: true })
   visit: Visit;
 
-  @ApiProperty({ description: 'The specific hike this photo is associated with', required: false })
-  @ManyToOne(() => HikeRecord, hikeRecord => hikeRecord.photos, { nullable: true })
+  @ApiProperty({ description: 'The specific hike this photo is associated with', type: () => HikeRecord, required: false })
+  @ManyToOne(() => HikeRecord, { nullable: true })
   hikeRecord: HikeRecord;
 } 
