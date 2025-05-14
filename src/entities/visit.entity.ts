@@ -31,19 +31,19 @@ export class Visit {
   @Column('jsonb', { nullable: true })
   weatherData: any;
 
-  @ApiProperty({ description: 'The user who made this visit' })
-  @ManyToOne(() => User, user => user.visits)
+  @ApiProperty({ description: 'The user who made this visit', type: () => User })
+  @ManyToOne(() => User)
   user: User;
 
-  @ApiProperty({ description: 'The park that was visited' })
-  @ManyToOne(() => Park, park => park.visits)
+  @ApiProperty({ description: 'The park that was visited', type: () => Park })
+  @ManyToOne(() => Park)
   park: Park;
 
   @ApiHideProperty()
-  @OneToMany(() => HikeRecord, hikeRecord => hikeRecord.visit)
+  @OneToMany(() => HikeRecord, () => {})
   hikeRecords: HikeRecord[];
 
   @ApiHideProperty()
-  @OneToMany(() => Photo, photo => photo.visit)
+  @OneToMany(() => Photo, () => {})
   photos: Photo[];
 } 

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Visit } from './visit.entity';
 
@@ -26,7 +26,45 @@ export class User {
   @Column({ nullable: true })
   displayName: string;
 
+  @ApiProperty({ 
+    description: 'Auth0 user ID',
+    example: 'auth0|1234567890',
+    required: false
+  })
+  @Column({ unique: true, nullable: true })
+  auth0Id: string;
+
+  @ApiProperty({ 
+    description: 'User\'s email address',
+    example: 'user@example.com',
+    required: false
+  })
+  @Column({ nullable: true })
+  email: string;
+
+  @ApiProperty({ 
+    description: 'User\'s profile picture URL',
+    example: 'https://example.com/profile.jpg',
+    required: false
+  })
+  @Column({ nullable: true })
+  picture: string;
+
+  @ApiProperty({ 
+    description: 'When the user was created',
+    example: '2024-03-20T12:00:00Z'
+  })
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty({ 
+    description: 'When the user was last updated',
+    example: '2024-03-20T12:00:00Z'
+  })
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @ApiHideProperty()
-  @OneToMany(() => Visit, visit => visit.user)
+  @OneToMany(() => Visit, () => {})
   visits: Visit[];
 } 

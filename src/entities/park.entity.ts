@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Point } from 'geojson';
 import { Trail } from './trail.entity';
-import { Visit } from './visit.entity';
 
 @Entity()
 export class Park {
@@ -57,12 +56,4 @@ export class Park {
   })
   @Column({ nullable: true })
   websiteUrl: string;
-
-  @ApiHideProperty()
-  @OneToMany(() => Trail, trail => trail.park)
-  trails: Trail[];
-
-  @ApiHideProperty()
-  @OneToMany(() => Visit, visit => visit.park)
-  visits: Visit[];
 } 

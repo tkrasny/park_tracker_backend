@@ -1,14 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { Auth0Guard } from '../common/auth/auth0.guard';
+import { CurrentUser, RequestUser } from '../common/auth/user.decorator';
 
 @ApiTags('users')
+@ApiBearerAuth()
+@UseGuards(Auth0Guard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('profile')
+  @ApiOperation({ 
+    summary: 'Get current user profile',
+    description: 'Retrieves the profile of the currently authenticated user'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns the current user profile.',
+    type: UserDto 
+  })
+  getProfile(@CurrentUser() user: RequestUser) {
+    return user.dbUser;
+  }
 
   @Post()
   @ApiOperation({ 
