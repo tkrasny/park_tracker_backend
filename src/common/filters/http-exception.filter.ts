@@ -1,0 +1,73 @@
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Request, Response } from 'express';
+
+@Catch()
+export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
+
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    const status = 
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const message = 
+      exception instanceof HttpException
+        ? exception.message
+        : exception instanceof Error
+          ? exception.message
+          : 'Internal server error';
+
+    const errorResponse = {
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      method: request.method,
+      message: message,
+    };
+
+    // Enhanced error logging
+    const errorDetails = {
+      timestamp: new Date().toISOString(),
+      request: {
+        method: request.method,
+        url: request.url,
+        body: request.body,
+        query: request.query,
+        params: request.params,
+        headers: {
+          ...request.headers,
+          authorization: request.headers.authorization ? '[REDACTED]' : undefined
+        }
+      },
+      error: exception instanceof Error ? {
+        name: exception.name,
+        message: exception.message,
+        stack: exception.stack?.split('\n').map(line => line.trim()),
+        cause: exception.cause
+      } : {
+        type: typeof exception,
+        value: exception
+      }
+    };
+
+    // Log with appropriate level based on status
+    if (status >= 500) {
+      this.logger.error(
+        `${request.method} ${request.url} - ${status} ${message}`,
+        errorDetails
+      );
+    } else if (status >= 400) {
+      this.logger.warn(
+        `${request.method} ${request.url} - ${status} ${message}`,
+        errorDetails
+      );
+    }
+
+    response.status(status).json(errorResponse);
+  }
+} 

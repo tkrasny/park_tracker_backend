@@ -4,12 +4,12 @@ import { PhotosService } from './photos.service';
 import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdatePhotoDto } from './dto/update-photo.dto';
 import { Photo } from '../entities/photo.entity';
-import { Auth0Guard } from '../common/auth/auth0.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser, RequestUser } from '../common/auth/user.decorator';
 
 @ApiTags('photos')
 @ApiBearerAuth()
-@UseGuards(Auth0Guard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('photos')
 export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
