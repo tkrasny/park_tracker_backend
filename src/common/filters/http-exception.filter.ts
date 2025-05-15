@@ -1,9 +1,12 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
+
+  constructor(private configService: ConfigService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -18,16 +21,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const message = 
       exception instanceof HttpException
         ? exception.message
-        : exception instanceof Error
-          ? exception.message
-          : 'Internal server error';
+        : 'Internal server error';
 
+    const isDevelopment = this.configService.get('NODE_ENV') !== 'production';
     const errorResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
-      message: message,
+      message,
+      ...(isDevelopment && exception instanceof Error && {
+        stack: exception.stack,
+        name: exception.name
+      })
     };
 
     // Enhanced error logging
