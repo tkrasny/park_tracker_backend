@@ -3,12 +3,16 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   private readonly logger = new Logger(JwtStrategy.name);
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService
+  ) {
     const domain = configService.get<string>('AUTH0_DOMAIN');
     const audience = configService.get<string>('AUTH0_AUDIENCE');
 
@@ -50,9 +54,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         throw new UnauthorizedException('Invalid token payload');
       }
 
+      // Create or update user in our database
+      const user = await this.usersService.createOrUpdateFromAuth0(payload);
+
       return {
-        userId: payload.sub,
-        permissions: payload.permissions || [],
+        sub: payload.sub,
+        dbUser: user
       };
     } catch (error) {
       this.logger.error('JWT validation error:', error);

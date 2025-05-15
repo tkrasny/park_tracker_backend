@@ -4,12 +4,12 @@ import { VisitsService } from './visits.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from '../entities/visit.entity';
-import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser, RequestUser } from '../common/auth/user.decorator';
+import { CombinedAuthGuard } from '../common/auth/auth.guard';
+import { CurrentUser } from '../common/auth/user.decorator';
 
 @ApiTags('visits')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(CombinedAuthGuard)
 @Controller('visits')
 export class VisitsController {
   constructor(private readonly visitsService: VisitsService) {}
@@ -24,11 +24,8 @@ export class VisitsController {
     description: 'The visit has been successfully created.',
     type: Visit 
   })
-  create(
-    @Body() createVisitDto: CreateVisitDto,
-    @CurrentUser() user: RequestUser,
-  ) {
-    return this.visitsService.create(createVisitDto, user.dbUser.id);
+  create(@Body() createVisitDto: CreateVisitDto, @CurrentUser() user: any) {
+    return this.visitsService.create(createVisitDto, user.dbUser);
   }
 
   @Get()
@@ -46,14 +43,8 @@ export class VisitsController {
     description: 'Return all visits.',
     type: [Visit] 
   })
-  findAll(
-    @CurrentUser() user: RequestUser,
-    @Query('parkId') parkId?: string,
-  ) {
-    if (parkId) {
-      return this.visitsService.findByPark(parkId, user.dbUser.id);
-    }
-    return this.visitsService.findAll(user.dbUser.id);
+  findAll(@CurrentUser() user: any) {
+    return this.visitsService.findAll(user.dbUser);
   }
 
   @Get(':id')
@@ -75,11 +66,8 @@ export class VisitsController {
     status: 404, 
     description: 'Visit not found.' 
   })
-  findOne(
-    @Param('id') id: string,
-    @CurrentUser() user: RequestUser,
-  ) {
-    return this.visitsService.findOne(id, user.dbUser.id);
+  findOne(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.visitsService.findOne(id, user.dbUser);
   }
 
   @Patch(':id')
@@ -101,12 +89,8 @@ export class VisitsController {
     status: 404, 
     description: 'Visit not found.' 
   })
-  update(
-    @Param('id') id: string,
-    @Body() updateVisitDto: UpdateVisitDto,
-    @CurrentUser() user: RequestUser,
-  ) {
-    return this.visitsService.update(id, updateVisitDto, user.dbUser.id);
+  update(@Param('id') id: string, @Body() updateVisitDto: UpdateVisitDto, @CurrentUser() user: any) {
+    return this.visitsService.update(id, updateVisitDto, user.dbUser);
   }
 
   @Delete(':id')
@@ -127,10 +111,7 @@ export class VisitsController {
     status: 404, 
     description: 'Visit not found.' 
   })
-  remove(
-    @Param('id') id: string,
-    @CurrentUser() user: RequestUser,
-  ) {
-    return this.visitsService.remove(id, user.dbUser.id);
+  remove(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.visitsService.remove(id, user.dbUser);
   }
 } 

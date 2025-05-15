@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <title>Swagger UI: OAuth2 Redirect</title>
+</head>
+<body>
+<script>
+    'use strict';
+    function run() {
+        var oauth2 = window.opener.swaggerUIRedirectOauth2;
+        var sent = false;
+
+        if (oauth2) {
+            var keyValue = window.location.hash.substring(1).split('&');
+            var params = {};
+            for (var i = 0; i < keyValue.length; i++) {
+                var key = keyValue[i].split('=');
+                params[key[0]] = key[1];
+            }
+
+            if (params.access_token) {
+                oauth2.callback({
+                    auth: oauth2.auth,
+                    token: params,
+                    state: oauth2.state,
+                    isValid: true
+                });
+                sent = true;
+                window.close();
+            } else if (params.error) {
+                oauth2.callback({
+                    auth: oauth2.auth,
+                    error: params.error,
+                    state: oauth2.state,
+                    isValid: false
+                });
+                sent = true;
+                window.close();
+            }
+        }
+
+        if (!sent) {
+            oauth2.callback({
+                auth: oauth2.auth,
+                error: 'OAuth2 redirect failed',
+                state: oauth2.state,
+                isValid: false
+            });
+            window.close();
+        }
+    }
+
+    window.onload = run;
+</script>
+</body>
+</html> 
