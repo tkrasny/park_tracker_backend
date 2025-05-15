@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { TrailsModule } from './trails/trails.module';
 import { PhotosModule } from './photos/photos.module';
 import { VisitsModule } from './visits/visits.module';
+import { AuthModule } from './auth/auth.module';
 import auth0Config from './common/auth/auth0.config';
 
 @Module({
@@ -46,6 +47,7 @@ import auth0Config from './common/auth/auth0.config';
       },
       inject: [ConfigService],
     }),
+    AuthModule,
     ParksModule,
     UsersModule,
     TrailsModule,

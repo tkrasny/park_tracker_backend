@@ -4,12 +4,12 @@ import { VisitsService } from './visits.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from '../entities/visit.entity';
-import { Auth0Guard } from '../common/auth/auth0.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser, RequestUser } from '../common/auth/user.decorator';
 
 @ApiTags('visits')
 @ApiBearerAuth()
-@UseGuards(Auth0Guard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('visits')
 export class VisitsController {
   constructor(private readonly visitsService: VisitsService) {}
