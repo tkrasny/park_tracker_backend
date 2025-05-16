@@ -40,10 +40,10 @@ export class Visit {
   park: Park;
 
   @ApiHideProperty()
-  @OneToMany(() => HikeRecord, () => {})
+  @OneToMany(() => HikeRecord, hikeRecord => hikeRecord.visit)
   hikeRecords: HikeRecord[];
 
   @ApiHideProperty()
-  @OneToMany(() => Photo, () => {})
+  @OneToMany(() => Photo, photo => photo.visit)
   photos: Photo[];
 } 

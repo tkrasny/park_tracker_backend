@@ -25,7 +25,7 @@ export class PhotosController {
     type: Photo 
   })
   create(@Body() createPhotoDto: CreatePhotoDto, @CurrentUser() user: RequestUser) {
-    return this.photosService.create(createPhotoDto);
+    return this.photosService.create(createPhotoDto, user.dbUser.id);
   }
 
   @Get()
@@ -49,16 +49,17 @@ export class PhotosController {
     type: [Photo] 
   })
   findAll(
+    @CurrentUser() user: RequestUser,
     @Query('visitId') visitId?: string,
     @Query('hikeRecordId') hikeRecordId?: string,
   ) {
     if (visitId) {
-      return this.photosService.findByVisit(visitId);
+      return this.photosService.findByVisit(visitId, user.dbUser.id);
     }
     if (hikeRecordId) {
-      return this.photosService.findByHikeRecord(hikeRecordId);
+      return this.photosService.findByHikeRecord(hikeRecordId, user.dbUser.id);
     }
-    return this.photosService.findAll();
+    return this.photosService.findAll(user.dbUser.id);
   }
 
   @Get(':id')
@@ -80,8 +81,8 @@ export class PhotosController {
     status: 404, 
     description: 'Photo not found.' 
   })
-  findOne(@Param('id') id: string) {
-    return this.photosService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() user: RequestUser) {
+    return this.photosService.findOne(id, user.dbUser.id);
   }
 
   @Patch(':id')
@@ -106,8 +107,9 @@ export class PhotosController {
   update(
     @Param('id') id: string,
     @Body() updatePhotoDto: UpdatePhotoDto,
+    @CurrentUser() user: RequestUser
   ) {
-    return this.photosService.update(id, updatePhotoDto);
+    return this.photosService.update(id, updatePhotoDto, user.dbUser.id);
   }
 
   @Delete(':id')
@@ -128,7 +130,7 @@ export class PhotosController {
     status: 404, 
     description: 'Photo not found.' 
   })
-  remove(@Param('id') id: string) {
-    return this.photosService.remove(id);
+  remove(@Param('id') id: string, @CurrentUser() user: RequestUser) {
+    return this.photosService.remove(id, user.dbUser.id);
   }
 } 

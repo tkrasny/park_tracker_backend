@@ -44,22 +44,34 @@ A personal web application to visually track and showcase national parks visited
    - ✅ User session handling
    - ✅ Logout button with proper redirect
 
+4. **API Architecture**
+   - ✅ React Query integration
+   - ✅ Type-safe API client
+   - ✅ Error handling system
+   - ✅ DTO type definitions
+   - ✅ API response types
+
 ### In Progress
 1. **User Profile Management**
    - 🔄 User profile UI components
    - 🔄 Profile data persistence
-   - 🔄 User preferences storage
+   - 🔄 User preferences storages
+   - 🔄 Profile picture support
 
 2. **Backend Infrastructure**
    - 🔄 AWS RDS PostgreSQL setup
    - 🔄 Database schema design
    - 🔄 API endpoints for park visit tracking
    - 🔄 User data persistence
+   - 🔄 Trail tracking system
+   - 🔄 Photo management system
 
 3. **Map Features**
    - 🔄 Visit status tracking
    - 🔄 Custom marker states for visited/unvisited parks
    - 🔄 Interactive visit marking from map view
+   - 🔄 Trail path visualization
+   - 🔄 Photo location markers
 
 ## Next Steps
 1. **User Profile Implementation**
@@ -67,11 +79,13 @@ A personal web application to visually track and showcase national parks visited
    - Add profile picture support
    - Implement user preferences
    - Add visit history tracking
+   - Add trail completion tracking
 
 2. **Database Implementation**
    - Set up AWS RDS PostgreSQL instance
    - Design and implement database schema
    - Create user and park visit tables
+   - Add trail and photo tables
    - Set up database migrations
    - Implement data access layer
 
@@ -79,6 +93,8 @@ A personal web application to visually track and showcase national parks visited
    - Set up NestJS project structure
    - Implement user authentication middleware
    - Create park visit tracking endpoints
+   - Add trail management endpoints
+   - Add photo management endpoints
    - Add data validation and error handling
    - Set up CORS and security configurations
 
@@ -87,6 +103,119 @@ A personal web application to visually track and showcase national parks visited
    - Add visit status indicators on map
    - Add visit history tracking
    - Implement user preferences UI
+   - Add trail tracking interface
+   - Add photo upload and management
+   - Implement weather data integration
+
+## Data Types
+### Base DTO
+```typescript
+interface BaseDto {
+  id: string;          // UUID
+  createdAt: Date;     // Creation timestamp
+  updatedAt: Date;     // Last update timestamp
+}
+```
+
+### User DTOs
+```typescript
+interface CreateUserDto {
+  username: string;    // 3-30 chars
+  displayName?: string; // 2-50 chars, optional
+}
+
+interface UserDto extends BaseDto {
+  username: string;
+  displayName?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profilePictureUrl?: string;
+  isAdmin: boolean;
+}
+```
+
+### Park DTOs
+```typescript
+interface CreateParkDto {
+  name: string;        // Full name of the national park
+  code: string;        // National Park Service code
+  location?: Point;    // GeoJSON Point
+  description?: string;
+  state?: string;
+  region?: string;
+  imageUrl?: string;
+  websiteUrl?: string;
+}
+
+interface ParkDto extends BaseDto {
+  name: string;
+  state: string;
+  establishedYear?: number;
+  area?: number;
+  annualVisitors?: number;
+  description?: string;
+}
+```
+
+### Trail DTOs
+```typescript
+interface CreateTrailDto {
+  name: string;
+  length?: number;     // in miles
+  difficulty?: 'Easy' | 'Moderate' | 'Difficult' | 'Strenuous';
+  elevationGain?: number; // in feet
+  trailPath?: any;     // GeoJSON LineString
+  parkId: string;      // UUID
+}
+```
+
+### Visit DTOs
+```typescript
+interface CreateVisitDto {
+  visitDate: Date;
+  notes?: string;
+  weatherData?: any;   // Custom weather data object
+  parkId: string;      // UUID
+}
+
+interface VisitDto extends BaseDto {
+  visitDate: Date;
+  notes?: string;
+  weatherData?: any;
+  parkId: string;
+  userId: string;
+}
+```
+
+### Photo DTOs
+```typescript
+interface CreatePhotoDto {
+  url: string;         // URL to stored photo
+  caption?: string;
+  dateTaken?: Date;
+  location?: Point;    // GeoJSON Point
+  visitId?: string;    // UUID
+  hikeRecordId?: string; // UUID
+}
+
+interface PhotoDto extends BaseDto {
+  url: string;
+  caption?: string;
+  dateTaken?: Date;
+  location?: Point;
+  visitId?: string;
+  hikeRecordId?: string;
+}
+```
+
+### Common Types
+```typescript
+interface Point {
+  type: 'Point';
+  coordinates: [number, number]; // [longitude, latitude]
+}
+```
 
 ## Technical Debt & Improvements
 - Add loading states for map operations
@@ -96,6 +225,9 @@ A personal web application to visually track and showcase national parks visited
 - Add API error handling
 - Implement request caching
 - Set up monitoring and logging
+- Add photo upload progress indicators
+- Implement offline support
+- Add data validation on frontend
 
 ## Development Notes
 ### Authentication Implementation Details
@@ -129,6 +261,9 @@ A personal web application to visually track and showcase national parks visited
 - Need to handle authentication state persistence
 - Consider adding user profile picture support
 - Need to implement user preferences storage
+- Consider adding photo compression before upload
+- Need to implement trail path visualization
+- Consider adding weather data integration
 
 ## Development Environment
 - Node.js and npm for package management
@@ -145,6 +280,8 @@ A personal web application to visually track and showcase national parks visited
 4. Implement best practices for frontend development
 5. Gain experience with cloud infrastructure
 6. Implement secure authentication and data persistence
+7. Add trail and photo tracking capabilities
+8. Implement weather data integration
 
 ## Deployment
 - Frontend: GitHub Pages (implemented)

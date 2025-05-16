@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { VisitsService } from './visits.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from '../entities/visit.entity';
-import { CombinedAuthGuard } from '../common/auth/auth.guard';
-import { CurrentUser } from '../common/auth/user.decorator';
+import { CurrentUser, RequestUser } from '../common/auth/user.decorator';
 
 @ApiTags('visits')
 @ApiBearerAuth()
-@UseGuards(CombinedAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('visits')
 export class VisitsController {
   constructor(private readonly visitsService: VisitsService) {}
@@ -24,14 +24,14 @@ export class VisitsController {
     description: 'The visit has been successfully created.',
     type: Visit 
   })
-  create(@Body() createVisitDto: CreateVisitDto, @CurrentUser() user: any) {
+  create(@Body() createVisitDto: CreateVisitDto, @CurrentUser() user: RequestUser) {
     return this.visitsService.create(createVisitDto, user.dbUser);
   }
 
   @Get()
   @ApiOperation({ 
     summary: 'Get all visits',
-    description: 'Retrieves a list of all visits for the current user'
+    description: 'Returns all visits for the current user'
   })
   @ApiQuery({
     name: 'parkId',
@@ -40,10 +40,10 @@ export class VisitsController {
   })
   @ApiResponse({ 
     status: 200, 
-    description: 'Return all visits.',
+    description: 'Returns all visits.',
     type: [Visit] 
   })
-  findAll(@CurrentUser() user: any) {
+  findAll(@CurrentUser() user: RequestUser) {
     return this.visitsService.findAll(user.dbUser);
   }
 

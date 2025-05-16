@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
-import { Point } from 'geojson';
 import { Trail } from './trail.entity';
 
 @Entity()
@@ -18,12 +17,20 @@ export class Park {
   code: string;
 
   @ApiProperty({
-    description: 'Geographic coordinates of the park center',
-    example: { type: 'Point', coordinates: [-119.5383, 37.8651] },
+    description: 'Latitude coordinate of the park center',
+    example: 37.8651,
     required: false
   })
-  @Column('point', { nullable: true })
-  location: Point;
+  @Column('decimal', { precision: 10, scale: 6, nullable: true })
+  latitude: number;
+
+  @ApiProperty({
+    description: 'Longitude coordinate of the park center',
+    example: -119.5383,
+    required: false
+  })
+  @Column('decimal', { precision: 10, scale: 6, nullable: true })
+  longitude: number;
 
   @ApiProperty({ 
     description: 'Brief description of the park', 
