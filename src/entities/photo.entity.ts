@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Point } from 'geojson';
 import { Visit } from './visit.entity';
 import { HikeRecord } from './hike-record.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Photo {
@@ -32,6 +33,10 @@ export class Photo {
   })
   @Column('point', { nullable: true })
   location: Point;
+
+  @ApiProperty({ description: 'The user who owns this photo', type: () => User })
+  @ManyToOne(() => User)
+  user: User;
 
   @ApiProperty({ description: 'The park visit this photo is associated with', type: () => Visit, required: false })
   @ManyToOne(() => Visit, { nullable: true })

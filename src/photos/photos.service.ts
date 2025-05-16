@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Photo } from '../entities/photo.entity';
@@ -7,55 +7,96 @@ import { UpdatePhotoDto } from './dto/update-photo.dto';
 
 @Injectable()
 export class PhotosService {
+  private readonly logger = new Logger(PhotosService.name);
+
   constructor(
     @InjectRepository(Photo)
     private photosRepository: Repository<Photo>,
   ) {}
 
-  async create(createPhotoDto: CreatePhotoDto): Promise<Photo> {
-    const photo = this.photosRepository.create(createPhotoDto);
-    return await this.photosRepository.save(photo);
-  }
-
-  async findAll(): Promise<Photo[]> {
-    return await this.photosRepository.find({
-      relations: ['visit', 'hikeRecord'],
-    });
-  }
-
-  async findOne(id: string): Promise<Photo> {
-    const photo = await this.photosRepository.findOne({
-      where: { id },
-      relations: ['visit', 'hikeRecord'],
-    });
-    if (!photo) {
-      throw new NotFoundException(`Photo with ID ${id} not found`);
+  async create(createPhotoDto: CreatePhotoDto, userId: string): Promise<Photo> {
+    try {
+      const photo = this.photosRepository.create({
+        ...createPhotoDto,
+        user: { id: userId }
+      });
+      return await this.photosRepository.save(photo);
+    } catch (error) {
+      this.logger.error(`Error creating photo: ${error.message}`, error.stack);
+      throw error;
     }
-    return photo;
   }
 
-  async update(id: string, updatePhotoDto: UpdatePhotoDto): Promise<Photo> {
-    const photo = await this.findOne(id);
-    Object.assign(photo, updatePhotoDto);
-    return await this.photosRepository.save(photo);
+  async findAll(userId: string): Promise<Photo[]> {
+    try {
+      return await this.photosRepository.find({
+        where: { user: { id: userId } },
+        relations: ['visit', 'hikeRecord', 'user'],
+      });
+    } catch (error) {
+      this.logger.error(`Error finding photos for user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 
-  async remove(id: string): Promise<void> {
-    const photo = await this.findOne(id);
-    await this.photosRepository.remove(photo);
+  async findOne(id: string, userId: string): Promise<Photo> {
+    try {
+      const photo = await this.photosRepository.findOne({
+        where: { id, user: { id: userId } },
+        relations: ['visit', 'hikeRecord', 'user'],
+      });
+      if (!photo) {
+        throw new NotFoundException(`Photo with ID ${id} not found`);
+      }
+      return photo;
+    } catch (error) {
+      this.logger.error(`Error finding photo ${id} for user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 
-  async findByVisit(visitId: string): Promise<Photo[]> {
-    return await this.photosRepository.find({
-      where: { visit: { id: visitId } },
-      relations: ['visit', 'hikeRecord'],
-    });
+  async update(id: string, updatePhotoDto: UpdatePhotoDto, userId: string): Promise<Photo> {
+    try {
+      const photo = await this.findOne(id, userId);
+      Object.assign(photo, updatePhotoDto);
+      return await this.photosRepository.save(photo);
+    } catch (error) {
+      this.logger.error(`Error updating photo ${id} for user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 
-  async findByHikeRecord(hikeRecordId: string): Promise<Photo[]> {
-    return await this.photosRepository.find({
-      where: { hikeRecord: { id: hikeRecordId } },
-      relations: ['visit', 'hikeRecord'],
-    });
+  async remove(id: string, userId: string): Promise<void> {
+    try {
+      const photo = await this.findOne(id, userId);
+      await this.photosRepository.remove(photo);
+    } catch (error) {
+      this.logger.error(`Error removing photo ${id} for user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  async findByVisit(visitId: string, userId: string): Promise<Photo[]> {
+    try {
+      return await this.photosRepository.find({
+        where: { visit: { id: visitId }, user: { id: userId } },
+        relations: ['visit', 'hikeRecord', 'user'],
+      });
+    } catch (error) {
+      this.logger.error(`Error finding photos for visit ${visitId} and user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  async findByHikeRecord(hikeRecordId: string, userId: string): Promise<Photo[]> {
+    try {
+      return await this.photosRepository.find({
+        where: { hikeRecord: { id: hikeRecordId }, user: { id: userId } },
+        relations: ['visit', 'hikeRecord', 'user'],
+      });
+    } catch (error) {
+      this.logger.error(`Error finding photos for hike record ${hikeRecordId} and user ${userId}: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 } 
