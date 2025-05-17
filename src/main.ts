@@ -1,7 +1,7 @@
 // main.ts
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { CustomLogger } from './common/logger/logger.service';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -26,12 +26,26 @@ async function bootstrap() {
   // Serve static files for Swagger OAuth2
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
-  // Enable validation
+  // Enable validation with detailed error messages
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
+      exceptionFactory: (errors) => {
+        const messages = errors.map(error => {
+          const constraints = error.constraints;
+          if (constraints) {
+            return Object.values(constraints).join(', ');
+          }
+          return `${error.property} has invalid value`;
+        });
+        return new HttpException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Validation failed',
+          errors: messages,
+        }, HttpStatus.BAD_REQUEST);
+      },
     }),
   );
 
