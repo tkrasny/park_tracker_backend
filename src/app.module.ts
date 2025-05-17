@@ -23,26 +23,31 @@ import auth0Config from './common/auth/auth0.config';
       useFactory: (configService: ConfigService) => {
         const isProduction = configService.get('NODE_ENV') === 'production';
         
+        if (isProduction) {
+          const databaseUrl = configService.get('DATABASE_URL');
+          if (!databaseUrl) {
+            throw new Error('DATABASE_URL is required in production');
+          }
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: Object.values(entities),
+            synchronize: true,
+            ssl: { rejectUnauthorized: false },
+          };
+        }
+
+        // Development configuration
         return {
           type: 'postgres',
-          host: isProduction 
-            ? configService.get('RDS_HOSTNAME')
-            : configService.get('DB_HOST', 'localhost'),
-          port: isProduction
-            ? configService.get('RDS_PORT', 5432)
-            : configService.get('DB_PORT', 5434),
-          username: isProduction
-            ? configService.get('RDS_USERNAME')
-            : configService.get('DB_USERNAME', 'postgres'),
-          password: isProduction
-            ? configService.get('RDS_PASSWORD')
-            : configService.get('DB_PASSWORD', 'postgres'),
-          database: isProduction
-            ? configService.get('RDS_DB_NAME')
-            : configService.get('DB_DATABASE', 'park_tracker'),
+          host: configService.get('DB_HOST', 'localhost'),
+          port: configService.get('DB_PORT', 5434),
+          username: configService.get('DB_USERNAME', 'postgres'),
+          password: configService.get('DB_PASSWORD', 'postgres'),
+          database: configService.get('DB_DATABASE', 'park_tracker'),
           entities: Object.values(entities),
-          synchronize: !isProduction, // Only enable in development
-          ssl: isProduction ? { rejectUnauthorized: false } : false,
+          synchronize: true,
+          ssl: false,
         };
       },
       inject: [ConfigService],

@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsString, IsOptional, IsUUID, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsObject } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateVisitDto {
-  @ApiProperty({ description: 'Date of the park visit', example: '2023-07-15' })
-  @IsDate()
-  visitDate: Date;
+  @ApiProperty({ 
+    description: 'Date of the park visit in ISO format', 
+    example: '2023-07-15T00:00:00.000Z' 
+  })
+  @IsString()
+  @Type(() => String)
+  visitDate: string;
 
   @ApiProperty({ 
     description: 'Personal notes about the visit', 

@@ -5,6 +5,7 @@ import { Visit } from '../entities/visit.entity';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { User } from '../entities/user.entity';
+import { Park } from '../entities/park.entity';
 
 @Injectable()
 export class VisitsService {
@@ -13,13 +14,26 @@ export class VisitsService {
   constructor(
     @InjectRepository(Visit)
     private visitsRepository: Repository<Visit>,
+    @InjectRepository(Park)
+    private parkRepository: Repository<Park>,
   ) {}
 
   async create(createVisitDto: CreateVisitDto, user: User): Promise<Visit> {
+    const park = await this.parkRepository.findOne({
+      where: { id: createVisitDto.parkId }
+    });
+
+    if (!park) {
+      throw new NotFoundException(`Park with ID ${createVisitDto.parkId} not found`);
+    }
+
     const visit = this.visitsRepository.create({
       ...createVisitDto,
+      visitDate: new Date(createVisitDto.visitDate),
       user,
+      park,
     });
+
     return await this.visitsRepository.save(visit);
   }
 
