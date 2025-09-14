@@ -9,32 +9,36 @@ export class CustomLogger implements LoggerService {
       level: 'info',
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json()
+        winston.format.json(),
       ),
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.colorize(),
-            winston.format.printf(({ timestamp, level, message, context, trace, ...meta }) => {
-              const metaStr = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : '';
-              const traceStr = trace ? `\n${trace}` : '';
-              return `${timestamp} [${context || 'Application'}] ${level}: ${message}${metaStr}${traceStr}`;
-            })
+            winston.format.printf(
+              ({ timestamp, level, message, context, trace, ...meta }) => {
+                const metaStr = Object.keys(meta).length
+                  ? `\n${JSON.stringify(meta, null, 2)}`
+                  : '';
+                const traceStr = trace ? `\n${trace}` : '';
+                return `${timestamp} [${context || 'Application'}] ${level}: ${message}${metaStr}${traceStr}`;
+              },
+            ),
           ),
         }),
-        new winston.transports.File({ 
-          filename: 'logs/error.log', 
+        new winston.transports.File({
+          filename: 'logs/error.log',
           level: 'error',
           format: winston.format.combine(
             winston.format.timestamp(),
-            winston.format.json()
+            winston.format.json(),
           ),
         }),
-        new winston.transports.File({ 
+        new winston.transports.File({
           filename: 'logs/combined.log',
           format: winston.format.combine(
             winston.format.timestamp(),
-            winston.format.json()
+            winston.format.json(),
           ),
         }),
       ],
@@ -60,4 +64,4 @@ export class CustomLogger implements LoggerService {
   verbose(message: string, context?: string) {
     this.logger.verbose(message, { context });
   }
-} 
+}

@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InsertNationalParks1715850000000 implements MigrationInterface {
-    name = 'InsertNationalParks1715850000000'
+  name = 'InsertNationalParks1715850000000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             INSERT INTO park ("name", "code", "latitude", "longitude", "description", "state", "region", "imageUrl", "websiteUrl")
             VALUES
             ('Acadia National Park', 'ACAD', 44.3386, -68.2734, 'The first national park east of the Mississippi River, featuring rugged coastline, granite peaks, and diverse wildlife.', 'Maine', 'Northeast', 'https://www.nps.gov/common/uploads/structured_data/3C7B1B8A-1DD8-B71B-0B7EE131C7DFC2F5.jpg', 'https://www.nps.gov/acad/index.htm'),
@@ -71,23 +71,33 @@ export class InsertNationalParks1715850000000 implements MigrationInterface {
             ('Zion National Park', 'ZION', 37.2982, -112.9822, 'Features dramatic canyons, towering cliffs, and the Virgin River, creating a stunning landscape of red rock formations.', 'Utah', 'Intermountain', 'https://www.nps.gov/common/uploads/structured_data/3C7B1B8A-1DD8-B71B-0B7EE131C7DFC2F5.jpg', 'https://www.nps.gov/zion/index.htm');
         `);
 
-        // Create indexes
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS idx_park_name ON park ("name");`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS idx_park_code ON park ("code");`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS idx_park_state ON park ("state");`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS idx_park_region ON park ("region");`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS idx_park_coordinates ON park ("latitude", "longitude");`);
-    }
+    // Create indexes
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS idx_park_name ON park ("name");`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS idx_park_code ON park ("code");`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS idx_park_state ON park ("state");`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS idx_park_region ON park ("region");`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS idx_park_coordinates ON park ("latitude", "longitude");`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        // Remove indexes
-        await queryRunner.query(`DROP INDEX IF EXISTS idx_park_name;`);
-        await queryRunner.query(`DROP INDEX IF EXISTS idx_park_code;`);
-        await queryRunner.query(`DROP INDEX IF EXISTS idx_park_state;`);
-        await queryRunner.query(`DROP INDEX IF EXISTS idx_park_region;`);
-        await queryRunner.query(`DROP INDEX IF EXISTS idx_park_coordinates;`);
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Remove indexes
+    await queryRunner.query(`DROP INDEX IF EXISTS idx_park_name;`);
+    await queryRunner.query(`DROP INDEX IF EXISTS idx_park_code;`);
+    await queryRunner.query(`DROP INDEX IF EXISTS idx_park_state;`);
+    await queryRunner.query(`DROP INDEX IF EXISTS idx_park_region;`);
+    await queryRunner.query(`DROP INDEX IF EXISTS idx_park_coordinates;`);
 
-        // Remove all parks
-        await queryRunner.query(`DELETE FROM park;`);
-    }
-} 
+    // Remove all parks
+    await queryRunner.query(`DELETE FROM park;`);
+  }
+}

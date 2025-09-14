@@ -22,7 +22,7 @@ import auth0Config from './common/auth/auth0.config';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const isProduction = configService.get('NODE_ENV') === 'production';
-        
+
         if (isProduction) {
           const databaseUrl = configService.get('DATABASE_URL');
           if (!databaseUrl) {

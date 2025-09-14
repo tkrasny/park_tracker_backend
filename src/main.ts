@@ -33,18 +33,21 @@ async function bootstrap() {
       transform: true,
       forbidNonWhitelisted: true,
       exceptionFactory: (errors) => {
-        const messages = errors.map(error => {
+        const messages = errors.map((error) => {
           const constraints = error.constraints;
           if (constraints) {
             return Object.values(constraints).join(', ');
           }
           return `${error.property} has invalid value`;
         });
-        return new HttpException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: messages,
-        }, HttpStatus.BAD_REQUEST);
+        return new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Validation failed',
+            errors: messages,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       },
     }),
   );
@@ -75,7 +78,7 @@ async function bootstrap() {
       scheme: 'bearer',
       bearerFormat: 'JWT',
       name: 'JWT Input',
-      description: 'Enter your JWT token from Auth0'
+      description: 'Enter your JWT token from Auth0',
     })
     .addSecurityRequirements('bearer')
     .addOAuth2(
@@ -105,8 +108,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      persistAuthorization: true
-    }
+      persistAuthorization: true,
+    },
   });
 
   const port = configService.get('PORT', 3000);

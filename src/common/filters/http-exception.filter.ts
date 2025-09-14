@@ -1,4 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,12 +20,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status = 
+    const status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let message = 
+    let message =
       exception instanceof HttpException
         ? exception.message
         : 'Internal server error';
@@ -44,10 +51,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: request.method,
       message,
       ...(errors.length > 0 && { errors }),
-      ...(isDevelopment && exception instanceof Error && {
-        stack: exception.stack,
-        name: exception.name
-      })
+      ...(isDevelopment &&
+        exception instanceof Error && {
+          stack: exception.stack,
+          name: exception.name,
+        }),
     };
 
     // Enhanced error logging
@@ -61,33 +69,38 @@ export class HttpExceptionFilter implements ExceptionFilter {
         params: request.params,
         headers: {
           ...request.headers,
-          authorization: request.headers.authorization ? '[REDACTED]' : undefined
-        }
+          authorization: request.headers.authorization
+            ? '[REDACTED]'
+            : undefined,
+        },
       },
-      error: exception instanceof Error ? {
-        name: exception.name,
-        message: exception.message,
-        stack: exception.stack?.split('\n').map(line => line.trim()),
-        cause: exception.cause
-      } : {
-        type: typeof exception,
-        value: exception
-      }
+      error:
+        exception instanceof Error
+          ? {
+              name: exception.name,
+              message: exception.message,
+              stack: exception.stack?.split('\n').map((line) => line.trim()),
+              cause: exception.cause,
+            }
+          : {
+              type: typeof exception,
+              value: exception,
+            },
     };
 
     // Log with appropriate level based on status
     if (status >= 500) {
       this.logger.error(
         `${request.method} ${request.url} - ${status} ${message}`,
-        errorDetails
+        errorDetails,
       );
     } else if (status >= 400) {
       this.logger.warn(
         `${request.method} ${request.url} - ${status} ${message}`,
-        errorDetails
+        errorDetails,
       );
     }
 
     response.status(status).json(errorResponse);
   }
-} 
+}

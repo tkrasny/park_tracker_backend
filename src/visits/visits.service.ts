@@ -20,11 +20,13 @@ export class VisitsService {
 
   async create(createVisitDto: CreateVisitDto, user: User): Promise<Visit> {
     const park = await this.parkRepository.findOne({
-      where: { id: createVisitDto.parkId }
+      where: { id: createVisitDto.parkId },
     });
 
     if (!park) {
-      throw new NotFoundException(`Park with ID ${createVisitDto.parkId} not found`);
+      throw new NotFoundException(
+        `Park with ID ${createVisitDto.parkId} not found`,
+      );
     }
 
     const visit = this.visitsRepository.create({
@@ -44,7 +46,10 @@ export class VisitsService {
         relations: ['user', 'park', 'hikeRecords', 'photos'],
       });
     } catch (error) {
-      this.logger.error(`Error finding visits for user ${user.id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding visits for user ${user.id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -62,7 +67,11 @@ export class VisitsService {
     return visit;
   }
 
-  async update(id: string, updateVisitDto: UpdateVisitDto, user: User): Promise<Visit> {
+  async update(
+    id: string,
+    updateVisitDto: UpdateVisitDto,
+    user: User,
+  ): Promise<Visit> {
     const visit = await this.findOne(id, user);
     Object.assign(visit, updateVisitDto);
     return await this.visitsRepository.save(visit);
@@ -79,4 +88,4 @@ export class VisitsService {
       relations: ['user', 'park', 'hikeRecords', 'photos'],
     });
   }
-} 
+}

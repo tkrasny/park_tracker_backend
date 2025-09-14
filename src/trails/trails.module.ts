@@ -10,4 +10,4 @@ import { Trail } from '../entities/trail.entity';
   providers: [TrailsService],
   exports: [TrailsService],
 })
-export class TrailsModule {} 
+export class TrailsModule {}

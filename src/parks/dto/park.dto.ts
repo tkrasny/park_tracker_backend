@@ -8,10 +8,16 @@ export class ParkDto extends BaseDto {
   @ApiProperty({ description: 'State where the park is located' })
   state: string;
 
-  @ApiProperty({ description: 'Year the park was established', required: false })
+  @ApiProperty({
+    description: 'Year the park was established',
+    required: false,
+  })
   establishedYear?: number;
 
-  @ApiProperty({ description: 'Area of the park in square miles', required: false })
+  @ApiProperty({
+    description: 'Area of the park in square miles',
+    required: false,
+  })
   area?: number;
 
   @ApiProperty({ description: 'Annual visitor count', required: false })
@@ -19,4 +25,4 @@ export class ParkDto extends BaseDto {
 
   @ApiProperty({ description: 'Description of the park', required: false })
   description?: string;
-} 
+}
