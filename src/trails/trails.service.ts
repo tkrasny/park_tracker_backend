@@ -30,7 +30,10 @@ export class TrailsService {
         relations: ['park'],
       });
     } catch (error) {
-      this.logger.error(`Error finding all trails: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding all trails: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -46,7 +49,10 @@ export class TrailsService {
       }
       return trail;
     } catch (error) {
-      this.logger.error(`Error finding trail ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding trail ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -57,7 +63,10 @@ export class TrailsService {
       Object.assign(trail, updateTrailDto);
       return await this.trailsRepository.save(trail);
     } catch (error) {
-      this.logger.error(`Error updating trail ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error updating trail ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -67,7 +76,10 @@ export class TrailsService {
       const trail = await this.findOne(id);
       await this.trailsRepository.remove(trail);
     } catch (error) {
-      this.logger.error(`Error removing trail ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error removing trail ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -79,8 +91,11 @@ export class TrailsService {
         relations: ['park'],
       });
     } catch (error) {
-      this.logger.error(`Error finding trails for park ${parkId}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding trails for park ${parkId}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
-} 
+}

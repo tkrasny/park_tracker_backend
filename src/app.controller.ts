@@ -20,7 +20,7 @@ export class AppController {
       // Test database connection
       const isConnected = this.dataSource.isInitialized;
       const dbStatus = isConnected ? 'connected' : 'disconnected';
-      
+
       return {
         status: 'ok',
         timestamp: new Date().toISOString(),

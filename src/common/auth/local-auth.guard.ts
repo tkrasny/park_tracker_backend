@@ -12,7 +12,7 @@ export class LocalAuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    
+
     // For local development, create a mock user
     request.user = {
       sub: 'local-dev-user',
@@ -20,10 +20,10 @@ export class LocalAuthGuard implements CanActivate {
         id: 1,
         email: 'dev@example.com',
         auth0Id: 'local-dev-user',
-        name: 'Local Dev User'
-      }
+        name: 'Local Dev User',
+      },
     };
 
     return true;
   }
-} 
+}

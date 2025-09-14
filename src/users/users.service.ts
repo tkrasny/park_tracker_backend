@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -37,7 +42,10 @@ export class UsersService {
     try {
       return await this.usersRepository.find();
     } catch (error) {
-      this.logger.error(`Error finding all users: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding all users: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -50,7 +58,10 @@ export class UsersService {
       }
       return user;
     } catch (error) {
-      this.logger.error(`Error finding user ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding user ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -63,7 +74,10 @@ export class UsersService {
       }
       return user;
     } catch (error) {
-      this.logger.error(`Error finding user with username ${username}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding user with username ${username}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -84,7 +98,10 @@ export class UsersService {
       Object.assign(user, updateUserDto);
       return await this.usersRepository.save(user);
     } catch (error) {
-      this.logger.error(`Error updating user ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error updating user ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -94,7 +111,10 @@ export class UsersService {
       const user = await this.findOne(id);
       await this.usersRepository.remove(user);
     } catch (error) {
-      this.logger.error(`Error removing user ${id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error removing user ${id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -107,7 +127,10 @@ export class UsersService {
       }
       return user;
     } catch (error) {
-      this.logger.error(`Error finding user with Auth0 ID ${auth0Id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error finding user with Auth0 ID ${auth0Id}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -118,10 +141,9 @@ export class UsersService {
         throw new Error('Invalid Auth0 user - missing sub claim');
       }
 
-      let user = await this.usersRepository.findOne({ 
-        where: { auth0Id: auth0User.sub }
+      let user = await this.usersRepository.findOne({
+        where: { auth0Id: auth0User.sub },
       });
-
 
       if (!user) {
         // Create new user from Auth0 data
@@ -144,8 +166,11 @@ export class UsersService {
       const savedUser = await this.usersRepository.save(user);
       return savedUser;
     } catch (error) {
-      this.logger.error(`Error creating/updating user from Auth0: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error creating/updating user from Auth0: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
-} 
+}

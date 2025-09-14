@@ -1,14 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Trail } from './trail.entity';
+import { Visit } from './visit.entity';
 
 @Entity()
 export class Park {
-  @ApiProperty({ description: 'Unique identifier for the park', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: 'Unique identifier for the park',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Full name of the national park', example: 'Yosemite National Park' })
+  @ApiProperty({
+    description: 'Full name of the national park',
+    example: 'Yosemite National Park',
+  })
   @Column()
   name: string;
 
@@ -19,7 +26,7 @@ export class Park {
   @ApiProperty({
     description: 'Latitude coordinate of the park center',
     example: 37.8651,
-    required: false
+    required: false,
   })
   @Column('decimal', { precision: 10, scale: 6, nullable: true })
   latitude: number;
@@ -27,40 +34,68 @@ export class Park {
   @ApiProperty({
     description: 'Longitude coordinate of the park center',
     example: -119.5383,
-    required: false
+    required: false,
   })
   @Column('decimal', { precision: 10, scale: 6, nullable: true })
   longitude: number;
 
-  @ApiProperty({ 
-    description: 'Brief description of the park', 
-    example: "Yosemite National Park is in California's Sierra Nevada mountains", 
-    required: false 
+  @ApiProperty({
+    description: 'Brief description of the park',
+    example:
+      "Yosemite National Park is in California's Sierra Nevada mountains",
+    required: false,
   })
   @Column('text', { nullable: true })
   description: string;
 
-  @ApiProperty({ description: 'State where the park is located', example: 'California', required: false })
+  @ApiProperty({
+    description: 'State where the park is located',
+    example: 'California',
+    required: false,
+  })
   @Column({ nullable: true })
   state: string;
 
-  @ApiProperty({ description: 'Geographic region of the park', example: 'Pacific West', required: false })
+  @ApiProperty({
+    description: 'Geographic region of the park',
+    example: 'Pacific West',
+    required: false,
+  })
   @Column({ nullable: true })
   region: string;
 
-  @ApiProperty({ 
-    description: 'URL to the park\'s primary image', 
-    example: 'https://www.nps.gov/common/uploads/structured_data/yosemite_image.jpg', 
-    required: false 
+  @ApiProperty({
+    description: "URL to the park's primary image",
+    example:
+      'https://www.nps.gov/common/uploads/structured_data/yosemite_image.jpg',
+    required: false,
   })
   @Column({ nullable: true })
   imageUrl: string;
 
-  @ApiProperty({ 
-    description: 'Official park website URL', 
-    example: 'https://www.nps.gov/yose/', 
-    required: false 
+  @ApiProperty({
+    description: 'Official park website URL',
+    example: 'https://www.nps.gov/yose/',
+    required: false,
   })
   @Column({ nullable: true })
   websiteUrl: string;
-} 
+
+  @ApiProperty({
+    description: 'When the park record was created',
+    example: '2024-03-20T12:00:00Z',
+  })
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'When the park record was last updated',
+    example: '2024-03-20T12:00:00Z',
+  })
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ApiHideProperty()
+  @OneToMany(() => Visit, (visit) => visit.park)
+  visits: Visit[];
+}

@@ -13,15 +13,7 @@ export class CombinedAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Try local auth first in development
-    if (this.configService.get('NODE_ENV') === 'development') {
-      const localResult = await this.localGuard.canActivate(context);
-      if (localResult) {
-        return true;
-      }
-    }
-
-    // Fall back to JWT auth
+    // Always use JWT auth
     return super.canActivate(context) as Promise<boolean>;
   }
-} 
+}

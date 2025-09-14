@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export default new DataSource({
   type: 'postgres',
-  host: isProduction 
+  host: isProduction
     ? process.env.RDS_HOSTNAME
     : process.env.DB_HOST || 'localhost',
   port: isProduction
@@ -26,4 +26,4 @@ export default new DataSource({
   entities: Object.values(entities),
   migrations: ['src/migrations/*.ts'],
   ssl: isProduction ? { rejectUnauthorized: false } : false,
-}); 
+});

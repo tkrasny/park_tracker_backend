@@ -1,5 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { VisitsService } from './visits.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
@@ -15,103 +32,110 @@ export class VisitsController {
   constructor(private readonly visitsService: VisitsService) {}
 
   @Post()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Create a new visit',
-    description: 'Creates a new park visit record'
+    description: 'Creates a new park visit record',
   })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'The visit has been successfully created.',
-    type: Visit 
+    type: Visit,
   })
-  create(@Body() createVisitDto: CreateVisitDto, @CurrentUser() user: RequestUser) {
+  create(
+    @Body() createVisitDto: CreateVisitDto,
+    @CurrentUser() user: RequestUser,
+  ) {
     return this.visitsService.create(createVisitDto, user.dbUser);
   }
 
   @Get()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get all visits',
-    description: 'Returns all visits for the current user'
+    description: 'Returns all visits for the current user',
   })
   @ApiQuery({
     name: 'parkId',
     required: false,
-    description: 'Filter visits by park ID'
+    description: 'Filter visits by park ID',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Returns all visits.',
-    type: [Visit] 
+    type: [Visit],
   })
   findAll(@CurrentUser() user: RequestUser) {
     return this.visitsService.findAll(user.dbUser);
   }
 
   @Get(':id')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get a visit by id',
-    description: 'Retrieves a specific visit by its unique identifier'
+    description: 'Retrieves a specific visit by its unique identifier',
   })
   @ApiParam({
     name: 'id',
     description: 'The unique identifier of the visit',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Return the visit.',
-    type: Visit 
+    type: Visit,
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Visit not found.' 
+  @ApiResponse({
+    status: 404,
+    description: 'Visit not found.',
   })
   findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.visitsService.findOne(id, user.dbUser);
   }
 
   @Patch(':id')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Update a visit',
-    description: 'Updates an existing visit\'s information'
+    description: "Updates an existing visit's information",
   })
   @ApiParam({
     name: 'id',
     description: 'The unique identifier of the visit to update',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'The visit has been successfully updated.',
-    type: Visit 
+    type: Visit,
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Visit not found.' 
+  @ApiResponse({
+    status: 404,
+    description: 'Visit not found.',
   })
-  update(@Param('id') id: string, @Body() updateVisitDto: UpdateVisitDto, @CurrentUser() user: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateVisitDto: UpdateVisitDto,
+    @CurrentUser() user: any,
+  ) {
     return this.visitsService.update(id, updateVisitDto, user.dbUser);
   }
 
   @Delete(':id')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Delete a visit',
-    description: 'Removes a visit from the system'
+    description: 'Removes a visit from the system',
   })
   @ApiParam({
     name: 'id',
     description: 'The unique identifier of the visit to delete',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'The visit has been successfully deleted.' 
+  @ApiResponse({
+    status: 200,
+    description: 'The visit has been successfully deleted.',
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Visit not found.' 
+  @ApiResponse({
+    status: 404,
+    description: 'Visit not found.',
   })
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.visitsService.remove(id, user.dbUser);
   }
-} 
+}
